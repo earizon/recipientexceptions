@@ -37,3 +37,88 @@ As soon as a new sender exception is triggered we will try to trap it and classi
 empty string is caused by an user mistake or a implementation/programming mistake. Base
 libraries must use the normal (sender) exceptions, (I/O Error, "null exceptions",...).
 Final apps (production code) must generate recipientExceptions.
+
+= Programing recipes =
+
+- Next comes some little recipes to make your code safer and cleaner and more stable.
+
+- Is quite common to writer functions that return true to signal everething worked fine and false to signal "failure/there was an error". Don't do it! While it works, it force you to check the return value and then decide what to do if the value returned was false (stop execution?, logging the failure? notifying the user?). Return values must be used to return real values, not state about code execution. Sooner than later you code will grow more and more complex since you are mixing the logic/business/aplication logic with implementation details. Also is quite risky to use boolean values with non-strongly typed languages since your function can return the "false" string and it will be interpretred as "boolean true" in sentences similar to :
+
+{{{
+if (returnValue) {
+  ...
+}
+}}}
+ 
+OK! You agree not to use true/false to return code executions values. Then what?. Well throw exceptions and in case you are making a final app use recipient exceptions. Use a common trap point (catch block) where ALL your exceptions will be captured. Rollback non-committed transactions, show an alert to the user, and/or log the error in a sensible way:
+
+Instead of:
+{{{
+function checkPassword(){
+  if (user["passwd"]!=inputPassword) return false;
+}
+}}}
+
+it's much better to use:
+{{{
+function checkPassword(){
+  if (user["passwd"]!=inputPassword)
+    throw new userException("wrong password","","Check Keyboard caplock");
+}
+}}}
+
+From previous example is not clear that throwing an exception is a better way to code. Let's put a more realistic example:
+
+==CASE 1: Using true/value to return execution status ==
+
+{{{
+ function getUserFromDatabase(){
+ /\*
+  * This function can't return true/value since return is reserved for
+  * the user fetched from Database.
+  * /
+ con = connectToDatabase(ddbb);
+ if (!con) return null;  // <--- Uhhh, null value. Problem !!!
+ ...
+ resultSet = execute_query(....);
+ if (!resultSet) return null; // <---- Uhhh, null value. Problem !!!
+
+ ...
+ return user;
+}
+
+function checkPassword(){
+  user = getUserFromDatabase();
+/*
+ * if user is null/void,empty string,.... return false, but ...
+ * Was it due to wrong password, problem connecting to the database,
+ * the user wasn't registered. We need to log each separate case.
+ */
+  if (!user) return false;  // <--- password was wrong or DDBB connection was wrong?
+  if (user["passwd"]!=inputPassword) return false;
+}
+}}}
+==CASE 2: Using recipient Exceptions ==
+{{{
+function getUserFromDatabase(){
+ con = connectToDatabase(ddbb);
+ if (!con) throw new administratorException
+  ("Con. to database failed","ddbb:$ddbb","Check network connection");
+ ...
+ resultSet = execute_query(....);
+ if (!resultSet) throw new userException
+  ("User not registrered","user:$user","Please try again with a different username);
+ ...
+ return user;
+}
+
+function checkPassword(){
+ user = getUserFromDatabase();
+ if (user["passwd"]!=inputPassword)
+  throw new userException("wrong password","","Check Keyboard caplock");
+}
+}}}
+
+The first case also force us to log every possible error when the error is raised and still we will only be able to log it into our server logs. Final user will get confused with wrong login errors.
+By using recipient exceptions the trap point, the (try-)catch block "surronding the main loop) the user will be advised whenever he does something wrong (trying to login with an non-registrered username or misstyping the password). But if a network connection to the database arose he will be notified with a polite message like ("System down, try again in a few minutes ..."). Also system administrators will not need to jump over lines of logs notifying a user misstyped the password. He will be able to concentrated in more important stuff.
+Error log proccessing is centralized in the catch block and by just getting the exception type (user, administrator, implementation) is much easier to notify the correct people.
