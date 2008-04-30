@@ -38,7 +38,7 @@ empty string is caused by an user mistake or a implementation/programming mistak
 libraries must use the normal (sender) exceptions, (I/O Error, "null exceptions",...).
 Final apps (production code) must generate recipientExceptions.
 
-= Programing recipes =
+= Programming recipes =
 
 - Next comes some little recipes to make your code safer and cleaner and more stable.
 
