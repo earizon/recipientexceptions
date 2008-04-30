@@ -74,7 +74,7 @@ From previous example is not clear that throwing an exception is a better way to
 {{{
  function getUserFromDatabase(){
  /\*
-  * This function can't return true/value since return is reserved for
+  * This function can not return true/value since return is reserved for
   * the user fetched from Database.
   * /
  con = connectToDatabase(ddbb);
