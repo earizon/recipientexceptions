@@ -73,10 +73,10 @@ From previous example is not clear that throwing an exception is a better way to
 
 {{{
  function getUserFromDatabase(){
- /\*
+ /*
   * This function can not return true/value since return is reserved for
   * the user fetched from Database.
-  * /
+  */
  con = connectToDatabase(ddbb);
  if (!con) return null;  // <--- Uhhh, null value. Problem !!!
  ...
@@ -91,8 +91,8 @@ function checkPassword(){
   user = getUserFromDatabase();
 /*
  * if user is null/void,empty string,.... return false, but ...
- * Was it due to wrong password, problem connecting to the database,
- * the user wasn't registered. We need to log each separate case.
+ * Was it due to wrong password?, problem connecting to the database?,
+ * the user wasn't registered?. We need to log each separate case?.
  */
   if (!user) return false;  // <--- password was wrong or DDBB connection was wrong?
   if (user["passwd"]!=inputPassword) return false;
@@ -107,7 +107,7 @@ function getUserFromDatabase(){
  ...
  resultSet = execute_query(....);
  if (!resultSet) throw new userException
-  ("User not registrered","user:$user","Please try again with a different username);
+  ("User not registrered","user:$user","Please try again with a different username");
  ...
  return user;
 }
