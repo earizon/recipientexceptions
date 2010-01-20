@@ -1,4 +1,4 @@
-#summary - Recipient exceptions are designed to make code cleaner and easier to read. If you think unit test save time then definetly you must take a look to recipient exceptions.
+#summary - Recipient exceptions are designed to make code cleaner and easier to read. If you think unit test save time then definetly you must take a look at recipient exceptions.
 
 = Introduction =
 
