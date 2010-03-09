@@ -1,4 +1,5 @@
-#summary - Recipient exceptions are designed to make code cleaner and easier to read. If you think unit test save time then definetly you must take a look at recipient exceptions.
+#summary - The recipient exceptions (micro)library is designed to make code cleaner and easier to read. If you think unit test save time then definetly you must take a look at recipient exceptions. R.E. promote good programming practices avoiding common pitfalls while trying to manage errors. R.E. help to isolate normal flow of code (without errors) from abnormal code execution when an error/exception appears. The final code will look shorter (sometimes up to 30% sorter in code lines) and easier to read. Exception control will also be more secure since a central error control point will take care of managing errors in an common way.
+
 
 = Introduction =
 
@@ -6,6 +7,14 @@ The name follows the sender/recipient nomenclature of (e)mails. Ussually librari
 
 recipient Exceptions are based on the next "axiom":
 * ". In order to fix/solve software exceptions as soon as possible sender exceptions must always be trapped and transformed in three categories of recipient exceptions when creating a production system: user exceptions, administrator exceptions, implementation exceptions" *
+
+
+= Obtaining the library =
+Use the next subversion command:
+ svn checkout http://recipientexceptions.googlecode.com/svn/trunk/ recipientexceptions-read-only  
+
+
+
 
 = Details =
 
@@ -121,3 +130,5 @@ function checkPassword(){
 The first case also force us to log every possible error when the error is raised and still we will only be able to log it into our server logs. Final user will get confused with wrong login errors.
 By using recipient exceptions the trap point, the (try-)catch block "surronding" the main loop) the user will be advised whenever he does something wrong (trying to login with an non-registrered username or misstyping the password). But if a network connection to the database arose he will be notified with a polite message like ("System down, try again in a few minutes ..."). Also system administrators will not need to jump over lines of logs notifying a user misstyped the password. He will be able to concentrated in more important stuff.
 Error log proccessing is centralized in the catch block and by just getting the exception type (user, administrator, implementation) is much easier to notify the correct people.
+
+The source code contains more elaborate examples showing how to use the R.E. in a JAVA servlet and in a PHP web app.
