@@ -1,0 +1,131 @@
+# Introduction #
+
+The name follows the sender/recipient nomenclature of (e)mails. Ussually libraries generate exceptions such as IOException, SQLException, DivisionByZero exceptions. Such exceptions will be treated as sender exceptions. Next let me present what recipient Exceptions will be:
+
+recipient Exceptions are based on the next "axiom":
+**". In order to fix/solve software exceptions as soon as possible sender exceptions must always be trapped and transformed in three categories of recipient exceptions when creating a production system: user exceptions, administrator exceptions, implementation exceptions"**
+
+
+# Obtaining the library #
+Use the next subversion command:
+> svn checkout http://recipientexceptions.googlecode.com/svn/trunk/ recipientexceptions-read-only
+
+
+
+
+# Details #
+
+Notice I speak about production systems. Libraries or modules are not production systems so they don't have any need to trap and transform sender exceptions in recipient Exceptions. The reason is that libraries or modules have no a-priory runtime context, so it makes no sense to speak about users or  administrators (with implementations beeing a case apart).
+
+The verb "to transform" can be interpreted as "to classify", since our code will trap
+the sender exception and according to the context where it's trapped it will transform/classify it into a new recipient Exception addressing a user, administrator or "implementation exception".
+
+Notice I speak about users or administrators but not about "implementators" (developers/programmers). That's maybe to highlight the idea that user and administrator exceptions can not be avoided since it scape the control of our software (a user mistake while filling a form or a power down). On the opposite implementations exceptions can be controlled while developing our code and, ideally, a final product never must raise implementation exceptions. Actually, unit tests and "quality assurance" must be the recipients of implementation exceptions. That's one reason why recipient exceptions are so unit-test friendly. You can just unit test your "piece of code" by sending input values and checking whether or not recipient Exceptions where thrown. Unit tests catch exceptions not planned while developing code while recipient Exceptions help such tests be easier/more intuitive to write. When the code grows in complexity and many layers of code are glummed together is all but easy to design correct Unit Tests. Still if your code uses recipient exceptions unit tests will be able to test where is true or not that a userException was thrown or whether a set of input values threw or not an implementation exception.
+
+- User Exceptions are those originated by an "external" user error, like sending non-correct or empty values. We will try to return such exceptions to the "external" user.
+Our app is not responsible of user errors and will take no further actions.
+
+- Administrator Exceptions are those originated by a network problem, server shutdown,
+or any other problem that must be solved by the proper system administrator.
+It can be possible/impossible for our software to fix the issue, for example trying to
+reconect to a database or trying to create a non-existing file. If that's not the case
+a new administrator Exception will be raised so that the people in charge takes care.
+
+- Implementation Exceptions are those originated by an error in our code, usually
+a non-valid state for a variable, or an impossible logical condition. Are closely related to "assert" checks. Unit tests must capture such exception so they will never be raised in
+production code.
+
+> Extreme programming suggest to desing unit-tests before starting to code. I agree, that's a good programming practice, but in real world is not always possible to imagine perfect unit-tests, since time, resources and knowledge constraints force us to make "blur-APIs" with parcial functionality. Still, it's easier to make "blur unit-tests" with sentences like "Try to read a document with wrong permissions" and check whether the expected user exception was thrown or an administrator/implementation exception was raised or no no recipient exceptions were thrown.
+
+As soon as a new sender exception is triggered (an I/O exception, a wrong state, a null pointer,...) we will try to trap and classify it. Then the common approach will be to "lift up the stack" to the proper recipient Exception controller. In a web app, for example, the recipient Exception controller can be the normal webapp servlet controller. In a GUI app the "main loop" could be used. In a "complex" server app, it's quite ussual to have N different threads in charge of N different asynchronous tasks. In such case the "main loop" for each thread will be responsible to capture recipient Exceptions and play sensible with them. "Play sensible" means for example that a web app controller will return an error page to the user with a explanation of the user error somewhere else in the code (maybe 5 levels "down the stack") where the userException was raised. It will return a polite message to the user if an administrator exception was raised (for example a database connection error or a full-disk quota error) and log the error or email the system administrator if possible. If an implementationException was found it will (ideally) try to use a "bugzilla" system to contact the software developer. Whether the recipient exception was detected sooner or later, our functions will limit themselves to raise up the stack to the controller.
+
+- As a best-practice approach recipient Exceptions will be created with a description, a detail and a (possible) solution. Don't forget the final purpose is to fix/solve exception as soon as possible.
+
+- Again, recipient Exceptions must be used for final app code, not base libraries, since there is no way "a priory" for a general purpose library to known, for example, whether an empty string is caused by an user mistake or a implementation/programming mistake. Base libraries must use the normal (sender) exceptions, (I/O Error, "null exceptions",...). Final apps (production code) must generate recipientExceptions.
+
+# Programming recipes #
+
+- Next comes some little recipes to make your code safer, cleaner and more stable.
+
+- Is quite common to writer functions that return true to signal everething worked fine and false to signal "failure/there was an error". Don't do it! While it works, it force you to check the return value and then decide what to do if the value returned was false (stop execution?, logging the failure? notifying the user?). Return values must be used to return real values, not state about code execution. Sooner than later you code will grow more and more complex since you are mixing the logic/business/aplication logic with implementation details. Also is quite risky to use boolean values with non-strongly typed languages since your function can return the "false" string and it will be interpretred as "boolean true" in sentences similar to :
+
+```
+if (returnValue) {
+  ...
+}
+```
+
+OK! You agree not to use true/false to return code executions values. Then what?. Well throw exceptions and in case you are making a final app use recipient exceptions. Use a common trap point (catch block) where ALL your exceptions will be captured. Rollback non-committed transactions, show an alert to the user, and/or log the error in a sensible way:
+
+Instead of:
+```
+function checkPassword(){
+  if (user["passwd"]!=inputPassword) return false;
+}
+```
+
+it's much better to use:
+```
+function checkPassword(){
+  if (user["passwd"]!=inputPassword)
+    throw new userException("wrong password","","Check Keyboard caplock");
+}
+```
+
+From previous example is not clear that throwing an exception is a better way to code. Let's put a more realistic example:
+
+## CASE 1: Using true/value to return execution status ##
+
+```
+ function getUserFromDatabase(){
+ /*
+  * This function can not return true/value since return is reserved for
+  * the user fetched from Database.
+  */
+ con = connectToDatabase(ddbb);
+ if (!con) return null;  // <--- Uhhh, null value. Problem !!!
+ ...
+ resultSet = execute_query(....);
+ if (!resultSet) return null; // <---- Uhhh, null value. Problem !!!
+
+ ...
+ return user;
+}
+
+function checkPassword(){
+  user = getUserFromDatabase();
+/*
+ * if user is null/void,empty string,.... return false, but ...
+ * Was it due to wrong password?, problem connecting to the database?,
+ * the user wasn't registered?. We need to log each separate case?.
+ */
+  if (!user) return false;  // <--- password was wrong or DDBB connection was wrong?
+  if (user["passwd"]!=inputPassword) return false;
+}
+```
+## CASE 2: Using recipient Exceptions ##
+```
+function getUserFromDatabase(){
+ con = connectToDatabase(ddbb);
+ if (!con) throw new administratorException
+  ("Con. to database failed","ddbb:$ddbb","Check network connection");
+ ...
+ resultSet = execute_query(....);
+ if (!resultSet) throw new userException
+  ("User not registrered","user:$user","Please try again with a different username");
+ ...
+ return user;
+}
+
+function checkPassword(){
+ user = getUserFromDatabase();
+ if (user["passwd"]!=inputPassword)
+  throw new userException("wrong password","","Check Keyboard caplock");
+}
+```
+
+The first case also force us to log every possible error when the error is raised and still we will only be able to log it into our server logs. Final user will get confused with wrong login errors.
+By using recipient exceptions the trap point, the (try-)catch block "surronding" the main loop) the user will be advised whenever he does something wrong (trying to login with an non-registrered username or misstyping the password). But if a network connection to the database arose he will be notified with a polite message like ("System down, try again in a few minutes ..."). Also system administrators will not need to jump over lines of logs notifying a user misstyped the password. He will be able to concentrated in more important stuff.
+Error log proccessing is centralized in the catch block and by just getting the exception type (user, administrator, implementation) is much easier to notify the correct people.
+
+The source code contains more elaborate examples showing how to use the R.E. in a JAVA servlet and in a PHP web app.
