@@ -5,6 +5,8 @@ You can use it on your arduino embedded app, or your multi-layered, multi-enterp
 
 Everything you need to know is explained in the micro-tutorial embedded as source code at:
    https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
+and here:
+   https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
 
 (AKA!!!, documentation is also keep-it-simple-and-stupid).
 
