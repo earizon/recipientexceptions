@@ -4,9 +4,12 @@ when managing errors and exceptions.
 You can use it on your arduino embedded app, or your multi-layered, multi-enterprise, multi-planet app. It justs works!
 
 Everything you need to know is explained in the micro-tutorial embedded as source code at:
-   https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
-and here:
-   https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
+   API:    https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
+   USSAGE: https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
+
+Alternatively if you feel more confortable with script languages, check this other docs:
+   API:    https://github.com/earizon/recipientexceptions/blob/master/PHP/recipientException.php
+   USSAGE: https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
 
 (AKA!!!, documentation is also keep-it-simple-and-stupid).
 
