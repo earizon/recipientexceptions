@@ -1,4 +1,7 @@
-This a keep-it-simple-and-stupid exception micro-library that solves all the problems you will have in a real software application.
+This a keep-it-simple-and-stupid exception micro-library that solves all the problems you will have in a real software application 
+when managing errors and exceptions.
+
+You can use it on your arduino embedded app, or your multi-layered, multi-enterprise, multi-planet app. It justs works!
 
 Everything you need to know is explained in the micro-tutorial embedded as source code at:
    https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
