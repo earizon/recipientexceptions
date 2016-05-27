@@ -1,2 +1,10 @@
+This a keep-it-simple-and-stupid exception micro-library that solves all the problems you will have in a real software application.
+
+Everything you need to know is explained in the micro-tutorial embedded as source code at:
+   https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
+
+(AKA!!!, documentation is also keep-it-simple-and-stupid).
+
 JAVA contains the recipient Exceptions Java implementation source code and examples showing how to use it in an servlet application.
 PHP contains the recipient Exceptions PHP implementation source code and examples showing how to use it in an WEB application.
+
