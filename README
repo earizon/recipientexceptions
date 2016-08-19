@@ -7,10 +7,9 @@ Everything you need to know is explained in the micro-tutorial embedded as sourc
    API:    https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/recipientException/recipientException.java
    USSAGE: https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
 
-Alternatively if you feel more confortable with script languages, check this other docs:
+Alternatively if you feel more confortable with script languages, check those other docs:
    API:    https://github.com/earizon/recipientexceptions/blob/master/PHP/recipientException.php
-   USSAGE: https://github.com/earizon/recipientexceptions/blob/master/JAVA/src/examples/servletController.java
-
+   USSAGE: https://github.com/earizon/recipientexceptions/blob/master/PHP/ControllerExample.php
 (AKA!!!, documentation is also keep-it-simple-and-stupid).
 
 JAVA contains the recipient Exceptions Java implementation source code and examples showing how to use it in an servlet application.
