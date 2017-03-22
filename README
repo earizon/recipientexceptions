@@ -1,3 +1,6 @@
+(This library has been deprecated in favor of: 
+  - https://github.com/earizon/java_recipient_exceptions
+)
 This a keep-it-simple-and-stupid exception micro-library that solves all the problems you will have in a real software application 
 when managing errors and exceptions.
 
